@@ -1,0 +1,3 @@
+Dear user,
+Please verify at hxxp://bank.test/login and https://t.co/xyz.
+Contact: help@bank.test

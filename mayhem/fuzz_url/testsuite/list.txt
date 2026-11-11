@@ -1,0 +1,16 @@
+http://example.com
+https://user:pass@sub.example.co.uk:8080/path/a%20b?x=1&y=2#frag
+www.example.com/foo
+ftp://ftp.example.org/file.txt
+mailto:someone@example.net
+user@example.org
+http://[2001:db8::1]/x
+http://192.168.0.1:80/
+http://0x7f.1/
+http://3232235777/
+http://xn--bcher-kva.example/
+http://例え.テスト/
+http://example.com\@evil.test/
+http://a.b.c.d.e.f.com/%2e%2e/%00
+file:///etc/passwd
+telephone:+123456789 http://goo.gl/abc <http://bracket.test/a> (http://paren.test/b).

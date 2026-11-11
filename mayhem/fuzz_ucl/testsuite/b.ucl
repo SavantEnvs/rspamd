@@ -1,0 +1,7 @@
+key = value;
+section { n = 10kb; t = 5min; arr = [1, 2, 3]; sub { x = "str"; y = <<EOD
+heredoc
+EOD
+; } }
+section { n = 11; }
+var = "${HOME}";

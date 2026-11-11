@@ -1,0 +1,80 @@
+# System V init adopted top level configuration
+
+# Please don't modify this file as your changes might be overwritten with
+# the next update.
+#
+# You can modify '$LOCAL_CONFDIR/rspamd.conf.local.override' to redefine
+# parameters defined on the top level
+#
+# You can modify '$LOCAL_CONFDIR/rspamd.conf.local' to add
+# parameters defined on the top level
+#
+# For specific modules or configuration you can also modify
+# '$LOCAL_CONFDIR/local.d/rspamd.conf' - to add your options or rewrite defaults
+# '$LOCAL_CONFDIR/override.d/rspamd.conf' - to override the defaults
+#
+# See https://rspamd.com/doc/developers/writing_rules.html for details
+
+.include "$CONFDIR/common.conf"
+
+options {
+    # An empty RSPAMD_PIDFILE disables writing a pidfile (useful when running
+    # as PID 1); otherwise it overrides the default location.
+    pidfile = "{= env.PIDFILE|default('$RUNDIR/rspamd.pid') =}";
+    .include "$CONFDIR/options.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/options.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/options.inc"
+}
+
+lang_detection {
+    .include "$CONFDIR/lang_detection.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/lang_detection.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/lang_detection.inc"
+}
+
+logging {
+    # Defaults to file logging; a deployment can export RSPAMD_LOG_TYPE
+    # (e.g. console or syslog) and RSPAMD_LOG_FILE to override without a patch.
+    type = "{= env.LOG_TYPE|default('file') =}";
+    filename = "{= env.LOG_FILE|default('$LOGDIR/rspamd.log') =}";
+    .include "$CONFDIR/logging.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/logging.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/logging.inc"
+}
+
+worker "normal" {
+    # Production default is localhost:11333; the functional test harness
+    # exports RSPAMD_PORT_NORMAL (and optionally RSPAMD_LOCAL_ADDR) so the
+    # same template binds the per-worker port under parallel pabot.
+    bind_socket = "{= env.LOCAL_ADDR|default('localhost') =}:{= env.PORT_NORMAL|default('11333') =}";
+    .include "$CONFDIR/worker-normal.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/worker-normal.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/worker-normal.inc"
+}
+
+worker "controller" {
+    bind_socket = "{= env.LOCAL_ADDR|default('localhost') =}:{= env.PORT_CONTROLLER|default('11334') =}";
+    .include "$CONFDIR/worker-controller.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/worker-controller.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/worker-controller.inc"
+}
+
+worker "rspamd_proxy" {
+    bind_socket = "{= env.LOCAL_ADDR|default('localhost') =}:{= env.PORT_PROXY|default('11332') =}";
+    .include "$CONFDIR/worker-proxy.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/worker-proxy.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/worker-proxy.inc"
+}
+
+# Local fuzzy storage is disabled by default
+
+worker "fuzzy" {
+    bind_socket = "{= env.LOCAL_ADDR|default('localhost') =}:{= env.PORT_FUZZY|default('11335') =}";
+    count = -1; # Disable by default, see #4677 for details
+    .include "$CONFDIR/worker-fuzzy.inc"
+    .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/worker-fuzzy.inc"
+    .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/worker-fuzzy.inc"
+}
+
+# Hyperscan helper worker (only available when built with hyperscan support)
+.include(try=true) "$CONFDIR/worker-hs_helper.conf"

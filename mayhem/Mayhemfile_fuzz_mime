@@ -1,0 +1,9 @@
+project: savantenvs/rspamd
+target: fuzz_mime
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/fuzz_mime/testsuite
+cmds:
+  - cmd: /mayhem/fuzz_mime
+    libfuzzer: true
+    timeout: 30

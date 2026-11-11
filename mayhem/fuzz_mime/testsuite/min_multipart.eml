@@ -1,0 +1,15 @@
+From: a@example.com
+Content-Type: multipart/mixed; boundary="XX"
+
+--XX
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<a href=3D"http://evil.test/">click</a>
+--XX
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="a.bin"
+Content-Transfer-Encoding: base64
+
+SGVsbG8gd29ybGQ=
+--XX--
